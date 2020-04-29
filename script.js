@@ -33,7 +33,8 @@ var hearts;
 
 var game = new Phaser.Game(config);
 
-function preload() {
+function preload()
+{
     this.load.image("sky", "assets/sky.png");
     this.load.image("ground", "assets/platform.png");
     this.load.image("star", "assets/star.png");
@@ -45,7 +46,8 @@ function preload() {
     this.load.image("heart", "assets/heart.png");
 }
 
-function create() {
+function create()
+{
     //  A simple background for our game
     this.add.image(400, 300, "sky");
 
@@ -112,7 +114,8 @@ function create() {
         }
     });
 
-    stars.children.iterate(function (child) {
+    stars.children.iterate(function (child)
+    {
         //  Give each star a slightly different bounce
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
     });
@@ -149,9 +152,11 @@ function create() {
 
     this.physics.add.collider(player, bombs, hitBomb, null, this);
 
-    this.input.addDownCallback(function () {
+    this.input.addDownCallback(function ()
+    {
 
-        if (game.sound.context.state === 'suspended') {
+        if (game.sound.context.state === 'suspended')
+        {
             game.sound.context.resume();
         }
 
@@ -162,35 +167,47 @@ var jumpMax = 2;
 var jumpsLeft = jumpMax;
 var isUpPressed = false;
 
-function update() {
-    if (gameOver) {
+function update()
+{
+    if (gameOver)
+    {
         return;
     }
 
-    if (cursors.left.isDown) {
+    if (cursors.left.isDown)
+    {
         player.setVelocityX(-160);
 
         player.anims.play("left", true);
-    } else
-        if (cursors.right.isDown) {
+    }
+    else
+    {
+        if (cursors.right.isDown)
+        {
             player.setVelocityX(160);
 
             player.anims.play("right", true);
-        } else {
+        } else
+        {
             player.setVelocityX(0);
 
             player.anims.play("turn");
         }
+    }
     //resets jumps left to maximum when touching ground
-    if (player.body.touching.down) {
+    if (player.body.touching.down)
+    {
         jumpsLeft = jumpMax;
     }
     //check if Up key is down
-    if (cursors.up.isDown) {
+    if (cursors.up.isDown)
+    {
         //to catch just the first key down event
-        if (isUpPressed === false) {
+        if (isUpPressed === false)
+        {
             //check if there is jumps left
-            if (jumpsLeft > 0) {
+            if (jumpsLeft > 0)
+            {
                 //jumps
                 player.setVelocityY(-330);
                 //updating the counter
@@ -200,26 +217,32 @@ function update() {
             }
         }
 
-    } else {
+    }
+    else
+    {
         //after realse of Up key, you may now click again
         isUpPressed = false;
     }
 
-    if (cursors.down.isDown) {
+    if (cursors.down.isDown)
+    {
         player.setVelocityY(320);
     }
 }
 
-function collectStar(player, star) {
+function collectStar(player, star)
+{
     star.disableBody(true, true);
 
     //  Add and update the score
     score += 10;
     scoreText.setText("Score: " + score);
 
-    if (stars.countActive(true) === 0) {
+    if (stars.countActive(true) === 0)
+    {
         //  A new batch of stars to collect
-        stars.children.iterate(function (child) {
+        stars.children.iterate(function (child)
+        {
             child.enableBody(true, child.x, 0, true, true);
         });
 
@@ -236,12 +259,14 @@ function collectStar(player, star) {
     }
 }
 // when player hits the bomb, live are updated and dispalyed
-function hitBomb(player, bomb) {
+function hitBomb(player, bomb)
+{
     bomb.disableBody(true, true);
     lives--;
     livesText.setText("x" + lives);
     //if lives are 0, the game ends.
-    if (lives === 0) {
+    if (lives === 0)
+    {
         this.physics.pause();
         player.setTint(0xff0000);
         player.anims.play("turn");
