@@ -42,6 +42,10 @@
         var score = 0;
         var gameOver = false;
         var scoreText;
+        var lives = 3;
+        var livesText;
+        var hearts;
+
 
         var game = new Phaser.Game(config);
 
@@ -54,6 +58,7 @@
                 frameWidth: 32,
                 frameHeight: 48,
             });
+            this.load.image("heart", "assets/heart.png");
         }
 
         function create() {
@@ -128,10 +133,24 @@
                 child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
             });
 
+            hearts = this.physics.add.staticGroup({
+                key: "heart",
+                setXY: {
+                    x: 725,
+                    y: 30,
+                },
+            });
+
             bombs = this.physics.add.group();
 
             //  The score
             scoreText = this.add.text(16, 16, "score: 0", {
+                fontSize: "32px",
+                fill: "#000",
+            });
+
+            //  The lives
+            livesText = this.add.text(750, 16, "x" + lives, {
                 fontSize: "32px",
                 fill: "#000",
             });
@@ -201,6 +220,8 @@
                 //after realse of Up key, you may now click again
                 isUpPressed = false;
             }
+
+
         }
 
         function collectStar(player, star) {
@@ -228,15 +249,18 @@
                 bomb.allowGravity = false;
             }
         }
-
+        // when player hits the bomb, live are updated and dispalyed
         function hitBomb(player, bomb) {
-            this.physics.pause();
-
-            player.setTint(0xff0000);
-
-            player.anims.play("turn");
-
-            gameOver = true;
+            bomb.disableBody(true, true);
+            lives--;
+            livesText.setText("x" + lives);
+            //if lives are 0, the game ends.
+            if (lives === 0) {
+                this.physics.pause();
+                player.setTint(0xff0000);
+                player.anims.play("turn");
+                gameOver = true;
+            }
         }
     </script>
 </body>
