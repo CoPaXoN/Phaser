@@ -29,9 +29,10 @@ var scoreText;
 var lives = 3;
 var livesText;
 var hearts;
-
-
+var timeLeftToEndOfTheGame = 120; //time left in seconds
+var fallingHearts;
 var game = new Phaser.Game(config);
+
 
 function preload()
 {
@@ -44,6 +45,7 @@ function preload()
         frameHeight: 48
     });
     this.load.image("heart", "assets/heart.png");
+    //this.load.image("shield", "assets/shield.png");
 }
 
 function create()
@@ -128,6 +130,12 @@ function create()
         }
     });
 
+    // The falling hearts
+    fallingHearts = this.physics.add.group();
+    this.physics.add.overlap(player, fallingHearts, collectHeart, null, this);
+    this.physics.add.collider(fallingHearts, platforms);
+
+
     bombs = this.physics.add.group();
 
     //  The score
@@ -149,7 +157,7 @@ function create()
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
     this.physics.add.overlap(player, stars, collectStar, null, this);
-
+    // Collide the player with bomb and call hitBomb if does
     this.physics.add.collider(player, bombs, hitBomb, null, this);
 
     this.input.addDownCallback(function ()
@@ -187,7 +195,8 @@ function update()
             player.setVelocityX(160);
 
             player.anims.play("right", true);
-        } else
+        }
+        else
         {
             player.setVelocityX(0);
 
@@ -216,7 +225,6 @@ function update()
                 isUpPressed = true;
             }
         }
-
     }
     else
     {
@@ -226,50 +234,10 @@ function update()
 
     if (cursors.down.isDown)
     {
-        player.setVelocityY(320);
+        player.setVelocityY(330);
     }
 }
 
-function collectStar(player, star)
-{
-    star.disableBody(true, true);
 
-    //  Add and update the score
-    score += 10;
-    scoreText.setText("Score: " + score);
 
-    if (stars.countActive(true) === 0)
-    {
-        //  A new batch of stars to collect
-        stars.children.iterate(function (child)
-        {
-            child.enableBody(true, child.x, 0, true, true);
-        });
 
-        var x =
-            player.x < 400 ?
-                Phaser.Math.Between(400, 800) :
-                Phaser.Math.Between(0, 400);
-
-        var bomb = bombs.create(x, 16, "bomb");
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-        bomb.allowGravity = false;
-    }
-}
-// when player hits the bomb, live are updated and dispalyed
-function hitBomb(player, bomb)
-{
-    bomb.disableBody(true, true);
-    lives--;
-    livesText.setText("x" + lives);
-    //if lives are 0, the game ends.
-    if (lives === 0)
-    {
-        this.physics.pause();
-        player.setTint(0xff0000);
-        player.anims.play("turn");
-        gameOver = true;
-    }
-}
